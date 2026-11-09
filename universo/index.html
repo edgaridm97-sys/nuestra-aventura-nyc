@@ -54,7 +54,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
-      background-color: var(--bg-base);
+      background-color: #0c0912;
       color: var(--text-main);
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       overflow-x: hidden;
@@ -63,15 +63,52 @@
     }
 
     /* Warm Cosmic Nebula Backdrop + Stardust Canvas */
-    .cosmos-backdrop {
+    /* DYNAMIC SAN CRISTÓBAL SUNSET TO DEEP COSMOS BACKDROP */
+    .sky-container {
       position: fixed;
       inset: 0;
       z-index: 0;
       pointer-events: none;
+      overflow: hidden;
+    }
+    /* Layer 1: San Cristóbal Sunset Sky (Warm Amber, Terracotta, Peach & Blush Dusk) */
+    .sky-sunset {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        #fce8d5 0%,
+        #f7caa5 18%,
+        #e29b74 42%,
+        #b86c75 68%,
+        #5a3a5e 88%,
+        #291a38 100%
+      );
+      opacity: 1;
+      transition: opacity 0.15s ease-out;
+      will-change: opacity;
+    }
+    .sunset-glow {
+      position: absolute;
+      bottom: 25%;
+      left: 10%;
+      width: 80vw;
+      height: 45vh;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 195, 130, 0.45) 0%, rgba(226, 120, 90, 0.18) 50%, transparent 75%);
+      filter: blur(50px);
+    }
+    /* Layer 2: Deep Midnight Galaxy & Nebulae */
+    .sky-cosmos {
+      position: absolute;
+      inset: 0;
+      background: #0d0a14;
       background:
-        radial-gradient(ellipse 68% 52% at 18% 22%, var(--nebula-1), transparent 70%),
-        radial-gradient(ellipse 60% 48% at 82% 36%, var(--nebula-2), transparent 72%),
-        radial-gradient(ellipse 75% 58% at 50% 82%, var(--nebula-3), transparent 75%);
+        radial-gradient(ellipse 68% 52% at 18% 22%, rgba(226, 192, 141, 0.16), transparent 70%),
+        radial-gradient(ellipse 60% 48% at 82% 36%, rgba(138, 77, 136, 0.22), transparent 72%),
+        radial-gradient(ellipse 75% 58% at 50% 82%, rgba(56, 38, 74, 0.28), transparent 75%),
+        #0c0912;
+      opacity: 1;
     }
     #stardustCanvas {
       position: fixed;
@@ -692,16 +729,20 @@
 </head>
 <body>
 
-  <!-- WARM GREIGE NEBULA + STARDUST CANVAS -->
-  <div class="cosmos-backdrop"></div>
+  <!-- DUAL ATMOSPHERE: SAN CRISTOBAL SUNSET TO DEEP COSMOS -->
+  <div class="sky-container">
+    <div class="sky-cosmos"></div>
+    <div class="sky-sunset" id="skySunset">
+      <div class="sunset-glow"></div>
+    </div>
+  </div>
   <canvas id="stardustCanvas"></canvas>
 
   <div class="page-shell">
     <!-- STICKY NAVBAR -->
     <nav class="navbar">
       <div style="display:flex; align-items:center; gap:8px;">
-        <a href="../" class="btn-pill" style="text-decoration:none; padding:5px 9px;" title="Volver al Portal">🏠</a>
-        <a href="../juego/" class="btn-pill" style="text-decoration:none; padding:5px 9px; border-color:rgba(255,51,119,0.45); color:#ff528c;" title="Videojuego 8-Bits">🎮 8-Bits</a>
+        <a href="../" class="btn-pill" style="text-decoration:none; padding:5px 10px;" title="Volver al Portal">🏠 Inicio</a>
         <div class="nav-brand" onclick="window.scrollTo({top:0,behavior:'smooth'})">
           Nuestro <span>Universo</span>
         </div>
@@ -716,9 +757,6 @@
         </button>
         <button id="btnEditMode" class="btn-pill" onclick="toggleEditMode()" title="Personalizar títulos, frases o mover fotos">
           <span>✎</span> <span class="btn-label-sm">Personalizar</span>
-        </button>
-        <button id="btnTheme" class="btn-pill" onclick="toggleTheme()" title="Alternar entre Cosmos Greige Nocturno y Planetario Greige Claro">
-          <span id="themeIcon">☀</span> <span id="themeLabel" class="btn-label-sm">Greige Claro</span>
         </button>
       </div>
     </nav>
@@ -737,6 +775,7 @@
         <div class="hero-cta-row">
           <button class="btn-gold" onclick="scrollToFirstOrbit()">Explorar las Órbitas ↓</button>
           <button class="btn-pill" style="padding:12px 22px; font-size:0.85rem;" onclick="startSlideshow(0)">▶ Reproducir Historia</button>
+          <a href="../juego/" class="btn-pill" style="text-decoration:none; padding:12px 20px; font-size:0.85rem; border-color:rgba(255,51,119,0.5); color:#ff528c;" title="Jugar Nuestra Aventura 8-Bits">🎮 Videojuego 8-Bits</a>
         </div>
       </div>
     </header>
@@ -771,7 +810,7 @@
       <div class="lb-actions">
         <button id="lbLiveBtn" class="lb-btn" style="display:none;" onclick="toggleLightboxLive()">◉ LIVE</button>
         <button id="lbAutoBtn" class="lb-btn" onclick="toggleSlideshow()">▶ Auto</button>
-        <button class="lb-btn" onclick="closeLightbox()">✕ Cerrar</button>
+        <button class="lb-btn" onclick="closeLightbox(event)">✕ Cerrar</button>
       </div>
     </div>
     <div class="lb-stage" id="lbStage">
@@ -825,7 +864,35 @@
 
     function toggleTheme() {
       custom.theme = (custom.theme === 'cosmos-dark') ? 'cosmos-greige' : 'cosmos-dark';
-      applyTheme();
+      
+    /* ========================================================================
+       SUNSET TO DEEP COSMOS SCROLL ENGINE
+       ======================================================================== */
+    const sunsetEl = document.getElementById('skySunset');
+    function updateSunsetScroll() {
+      if (!sunsetEl) return;
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      // Sunset stays full at the top, fades as you journey through orbits (0 to 1800px)
+      const fadeDist = 1750;
+      const sunsetOpacity = Math.max(0, Math.min(1, 1 - (scrollY / fadeDist)));
+      sunsetEl.style.opacity = sunsetOpacity.toFixed(3);
+
+      // Subtle atmospheric shift for navbar glass
+      const navbar = document.querySelector('.navbar');
+      if (navbar) {
+        if (sunsetOpacity > 0.4) {
+          navbar.style.background = `rgba(32, 22, 28, ${(0.82 - sunsetOpacity * 0.15).toFixed(2)})`;
+          navbar.style.borderColor = `rgba(226, 170, 130, ${(0.22 + sunsetOpacity * 0.15).toFixed(2)})`;
+        } else {
+          navbar.style.background = 'rgba(20, 17, 26, 0.85)';
+          navbar.style.borderColor = 'rgba(218, 205, 190, 0.14)';
+        }
+      }
+    }
+    window.addEventListener('scroll', updateSunsetScroll, { passive: true });
+    updateSunsetScroll();
+
+    applyTheme();
       saveCustom();
     }
 
@@ -879,8 +946,10 @@
           let py = (s.y - scrollY * 0.18 * s.z) % h;
           if (py < 0) py += h;
 
+          const scrollY = window.scrollY || 0;
+          const nightFactor = Math.min(1, Math.max(0.25, scrollY / 1400));
           const twinkle = 0.35 + 0.55 * (0.5 + 0.5 * Math.sin(t * 1.4 + s.phase));
-          const alpha = twinkle * (0.35 + 0.55 * s.z);
+          const alpha = twinkle * (0.35 + 0.55 * s.z) * nightFactor;
           ctx.beginPath();
           ctx.arc(px, py, s.r * s.z, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(${s.gold ? goldRgb : starRgb}, ${alpha.toFixed(3)})`;
@@ -1334,14 +1403,46 @@
       document.body.style.overflow = 'hidden';
       renderLightboxSlide();
     }
-    function closeLightbox() {
+    let closingLightboxTime = 0;
+    function closeLightbox(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
       stopSlideshow();
-      document.getElementById('lightbox').classList.remove('open');
+      closingLightboxTime = Date.now();
+
+      const currentItem = flatVisibleItems[lbIndex];
+      const lb = document.getElementById('lightbox');
+      lb.classList.remove('open');
       document.getElementById('lbMediaHolder').innerHTML = '';
       document.body.style.overflow = '';
+
+      // Smoothly return right to the orbit section where this memory lives!
+      if (currentItem && currentItem.chapterId) {
+        const sec = document.getElementById('sec_' + currentItem.chapterId);
+        if (sec) {
+          setTimeout(() => {
+            const y = sec.getBoundingClientRect().top + window.scrollY - 70;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }, 35);
+        }
+      }
     }
+    // Global click guard to block ghost clicks when closing lightbox
+    document.addEventListener('click', (e) => {
+      if (Date.now() - closingLightboxTime < 450) {
+        if (e.target.closest('a') || e.target.closest('button')) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }
+    }, true);
+
     function handleLightboxBackdrop(e) {
-      if (e.target.id === 'lightbox' || e.target.id === 'lbStage') closeLightbox();
+      if (e.target.id === 'lightbox' || e.target.id === 'lbStage') {
+        closeLightbox(e);
+      }
     }
     function stepLightbox(delta) {
       if (!flatVisibleItems.length) return;
