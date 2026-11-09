@@ -870,14 +870,27 @@
     function updateSunsetScroll() {
       if (!sunsetEl) return;
       const scrollY = window.scrollY || window.pageYOffset || 0;
-      const fadeDist = 1750;
-      const sunsetOpacity = Math.max(0, Math.min(1, 1 - (scrollY / fadeDist)));
+      const docHeight = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight,
+        4000
+      );
+      const winHeight = window.innerHeight || 800;
+      const maxScroll = Math.max(1, docHeight - winHeight);
+
+      // Sunset dynamically scales with full page height:
+      // Gently accompanies the journey through ~55% of all orbital chapters
+      const transitionDepth = maxScroll * 0.55;
+      const rawProgress = Math.max(0, Math.min(1, scrollY / transitionDepth));
+
+      // Smooth cubic curve: stays warm and golden through early eras, gradually dissolving into starry midnight
+      const sunsetOpacity = Math.pow(1 - rawProgress, 1.25);
       sunsetEl.style.opacity = sunsetOpacity.toFixed(3);
 
       const navbar = document.querySelector('.navbar');
       if (navbar) {
-        if (sunsetOpacity > 0.4) {
-          navbar.style.background = `rgba(32, 22, 28, ${(0.82 - sunsetOpacity * 0.15).toFixed(2)})`;
+        if (sunsetOpacity > 0.35) {
+          navbar.style.background = `rgba(32, 22, 28, ${(0.84 - sunsetOpacity * 0.12).toFixed(2)})`;
           navbar.style.borderColor = `rgba(226, 170, 130, ${(0.22 + sunsetOpacity * 0.15).toFixed(2)})`;
         } else {
           navbar.style.background = 'rgba(20, 17, 26, 0.85)';
@@ -886,6 +899,7 @@
       }
     }
     window.addEventListener('scroll', updateSunsetScroll, { passive: true });
+    window.addEventListener('resize', updateSunsetScroll, { passive: true });
     updateSunsetScroll();
 
     function toggleTheme() {
