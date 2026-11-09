@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="cosmos-dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuestro Universo · Anillos Orbitales de Recuerdos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       PALETTES: WARM GREIGE COSMOS (DARK) & GREIGE PLANETARIUM (LIGHT)
+       ========================================================================== */
+    :root[data-theme="cosmos-dark"] {
+      --bg-base: #120f0d;
+      --nebula-1: rgba(196, 179, 161, 0.14); /* Warm Greige Nebula */
+      --nebula-2: rgba(224, 190, 134, 0.11); /* Soft Champagne Amber */
+      --nebula-3: rgba(122, 104, 89, 0.18);  /* Deep Taupe Dust */
+      --nav-bg: rgba(20, 17, 15, 0.74);
+      --card-bg: #1c1815;
+      --border-subtle: rgba(218, 205, 190, 0.14);
+      --ring-line: rgba(226, 202, 166, 0.34);
+      --ring-glow: rgba(226, 196, 146, 0.16);
+      --text-main: #f2ece4;     /* Luminous Warm Ivory-Greige */
+      --text-muted: #b5a899;    /* Soft Warm Greige */
+      --accent: #e0c08d;        /* Warm Stardust Gold */
+      --accent-ink: #15110e;
+      --pill-bg: rgba(31, 26, 22, 0.78);
+      --card-shadow: 0 22px 48px rgba(0, 0, 0, 0.68);
+      --star-rgb: 236, 224, 206;
+      --gold-rgb: 226, 193, 138;
+    }
+
+    :root[data-theme="cosmos-greige"] {
+      --bg-base: #ded6ca;       /* Pure Warm Greige Moonstone */
+      --nebula-1: rgba(255, 250, 242, 0.65);
+      --nebula-2: rgba(186, 154, 104, 0.18);
+      --nebula-3: rgba(150, 134, 118, 0.22);
+      --nav-bg: rgba(226, 219, 209, 0.80);
+      --card-bg: #f4efe8;
+      --border-subtle: rgba(62, 50, 39, 0.14);
+      --ring-line: rgba(132, 99, 54, 0.28);
+      --ring-glow: rgba(168, 130, 74, 0.14);
+      --text-main: #241e19;
+      --text-muted: #665b50;
+      --accent: #8c6428;
+      --accent-ink: #fbf8f3;
+      --pill-bg: rgba(247, 242, 235, 0.82);
+      --card-shadow: 0 18px 40px rgba(48, 38, 28, 0.18);
+      --star-rgb: 120, 92, 54;
+      --gold-rgb: 165, 118, 48;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+      transition: background-color 0.5s ease, color 0.4s ease;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Warm Cosmic Nebula Backdrop + Stardust Canvas */
+    .cosmos-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 68% 52% at 18% 22%, var(--nebula-1), transparent 70%),
+        radial-gradient(ellipse 60% 48% at 82% 36%, var(--nebula-2), transparent 72%),
+        radial-gradient(ellipse 75% 58% at 50% 82%, var(--nebula-3), transparent 75%);
+    }
+    #stardustCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .page-shell {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Top Sticky Frosted Navigation */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 60;
+      background: var(--nav-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .nav-brand {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.38rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-main);
+      white-space: nowrap;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .nav-brand span { color: var(--accent); font-style: italic; }
+
+    .era-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 2px 4px;
+    }
+    .era-nav::-webkit-scrollbar { display: none; }
+    .era-pill {
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-muted);
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 0.77rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+    }
+    .era-pill:hover { color: var(--text-main); border-color: var(--accent); }
+    .era-pill.active {
+      background: var(--accent);
+      color: var(--accent-ink);
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .btn-pill {
+      border: 1px solid var(--border-subtle);
+      background: var(--pill-bg);
+      color: var(--text-main);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.22s ease;
+    }
+    .btn-pill:hover { border-color: var(--accent); }
+    .btn-pill.active-mode {
+      background: var(--accent);
+      color: var(--accent-ink);
+      border-color: var(--accent);
+    }
+
+    /* Hero Stage */
+    .hero {
+      position: relative;
+      min-height: min(88vh, 860px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 118px 24px 64px 24px;
+      overflow: hidden;
+    }
+    .hero-orbit-halo {
+      position: absolute;
+      width: min(82vw, 760px);
+      height: min(82vw, 760px);
+      border-radius: 50%;
+      border: 1px solid var(--ring-line);
+      box-shadow: 0 0 90px var(--ring-glow), inset 0 0 60px var(--ring-glow);
+      transform: rotateX(68deg) rotateZ(-12deg);
+      pointer-events: none;
+      animation: haloPulse 9s ease-in-out infinite alternate;
+    }
+    .hero-orbit-halo.halo-2 {
+      width: min(96vw, 980px);
+      height: min(96vw, 980px);
+      opacity: 0.55;
+      transform: rotateX(72deg) rotateZ(14deg);
+    }
+    @keyframes haloPulse {
+      from { opacity: 0.55; transform: rotateX(68deg) rotateZ(-12deg) scale(0.98); }
+      to   { opacity: 0.95; transform: rotateX(68deg) rotateZ(-6deg) scale(1.03); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      max-width: 780px;
+      animation: fadeRise 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes fadeRise {
+      from { opacity: 0; transform: translateY(26px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 3.2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2.8rem, 6.2vw, 5.1rem);
+      font-weight: 600;
+      line-height: 1.04;
+      margin-bottom: 18px;
+      letter-spacing: -0.5px;
+    }
+    .hero-sub {
+      font-size: clamp(0.96rem, 1.5vw, 1.12rem);
+      color: var(--text-muted);
+      line-height: 1.68;
+      max-width: 610px;
+      margin: 0 auto 26px auto;
+    }
+    .hero-chips {
+      display: inline-flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 9px;
+      margin-bottom: 30px;
+    }
+    .stat-chip {
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--pill-bg);
+      border: 1px solid var(--border-subtle);
+      color: var(--accent);
+    }
+    .hero-cta-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-gold {
+      background: var(--accent);
+      color: var(--accent-ink);
+      border: none;
+      border-radius: 999px;
+      padding: 13px 28px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.22s ease, opacity 0.22s ease;
+    }
+    .btn-gold:hover { transform: translateY(-2px); opacity: 0.93; }
+
+    /* Edit Mode Banner */
+    .edit-banner {
+      display: none;
+      max-width: 1120px;
+      margin: 0 auto 24px auto;
+      padding: 14px 22px;
+      border-radius: 16px;
+      background: var(--pill-bg);
+      border: 1px solid var(--accent);
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    body.is-editing .edit-banner { display: flex; }
+    body.is-editing [data-editable="true"] {
+      outline: 1px dashed var(--accent);
+      outline-offset: 4px;
+      border-radius: 6px;
+      cursor: text;
+    }
+
+    /* Vertical Celestial Timeline Spine */
+    .universe-timeline {
+      position: relative;
+      padding-bottom: 90px;
+    }
+    .celestial-spine {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 1px;
+      transform: translateX(-50%);
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        var(--ring-line) 4%,
+        var(--ring-line) 96%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Individual Orbit Chapter Section */
+    .orbit-section {
+      position: relative;
+      z-index: 2;
+      padding: 58px 0 66px 0;
+      opacity: 0;
+      transform: translateY(38px);
+      transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .orbit-section.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .orbit-header {
+      position: relative;
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 14px auto;
+      padding: 0 20px;
+    }
+    .spine-star {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 16px var(--accent);
+      margin: 0 auto 14px auto;
+    }
+    .orb-eyebrow {
+      display: inline-block;
+      font-size: 0.73rem;
+      font-weight: 700;
+      letter-spacing: 2.4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--pill-bg);
+      border: 1px solid var(--border-subtle);
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+    .orb-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2rem, 3.8vw, 3rem);
+      font-weight: 600;
+      line-height: 1.1;
+    }
+    .orb-sub {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       3D ORBITAL RING VIEWPORT & CARDS
+       ========================================================================== */
+    .orbit-viewport {
+      position: relative;
+      width: 100%;
+      height: 470px;
+      --base-side: 232px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: grab;
+      touch-action: pan-y; /* Allows smooth vertical scroll on mobile while horizontal drag spins the ring */
+      user-select: none;
+    }
+    .orbit-viewport.dragging {
+      cursor: grabbing;
+    }
+
+    .orbital-ellipse {
+      position: absolute;
+      width: min(86vw, 940px);
+      height: 128px;
+      border-radius: 50%;
+      border: 1.5px solid var(--ring-line);
+      box-shadow: 0 0 55px var(--ring-glow), inset 0 0 35px var(--ring-glow);
+      pointer-events: none;
+      transform: translateY(-6px);
+    }
+    .orbital-ellipse-inner {
+      position: absolute;
+      width: min(68vw, 720px);
+      height: 92px;
+      border-radius: 50%;
+      border: 1px dashed var(--ring-line);
+      opacity: 0.55;
+      pointer-events: none;
+      transform: translateY(-6px);
+    }
+    .orbital-core-glow {
+      position: absolute;
+      width: 340px;
+      height: 130px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--nebula-2) 0%, transparent 72%);
+      pointer-events: none;
+      filter: blur(14px);
+    }
+
+    .orbit-stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .orbit-card {
+      position: absolute;
+      width: calc(var(--base-side) * var(--sqrt-a, 0.88));
+      height: calc(var(--base-side) / var(--sqrt-a, 0.88));
+      border-radius: 15px;
+      overflow: hidden;
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--card-shadow);
+      will-change: transform, opacity;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      cursor: pointer;
+    }
+    .orbit-card.is-front {
+      border-color: var(--accent);
+      box-shadow: var(--card-shadow), 0 0 28px var(--ring-glow);
+    }
+    .orbit-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+    .orbit-card video.live-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+    .orbit-card.playing-live video.live-layer {
+      opacity: 1;
+    }
+
+    /* Live / Video Pill on Card */
+    .badge-top {
+      position: absolute;
+      top: 9px;
+      left: 9px;
+      z-index: 4;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3.5px 8.5px;
+      border-radius: 999px;
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      background: rgba(15, 12, 10, 0.72);
+      color: #f7f3ec;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      border: 1.5px dotted #f5cb6c;
+      display: inline-block;
+    }
+    .orbit-card.playing-live .live-dot {
+      background: #f5cb6c;
+      box-shadow: 0 0 8px #f5cb6c;
+    }
+
+    .card-date-chip {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      padding: 24px 11px 9px 11px;
+      background: linear-gradient(to top, rgba(12, 10, 8, 0.86) 0%, transparent 100%);
+      color: #f5efe6;
+      font-size: 0.69rem;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    /* Edit Overlay on Card */
+    .card-edit-bar {
+      display: none;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 7;
+      gap: 4px;
+    }
+    body.is-editing .card-edit-bar { display: flex; }
+    .mini-edit-btn {
+      background: rgba(18, 15, 13, 0.90);
+      color: #f5efe6;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      padding: 3px 6px;
+      font-size: 0.63rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Orbit Bottom Controls & Front-Card Readout */
+    .orbit-hud {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+      padding: 0 16px;
+    }
+    .front-readout {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      min-height: 20px;
+      text-align: center;
+    }
+    .front-readout strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+    .hud-btns {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--pill-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 999px;
+      padding: 4px 8px;
+    }
+    .hud-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+    .hud-btn:hover { color: var(--accent); background: rgba(224, 192, 141, 0.1); }
+    .hud-hint {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      padding: 0 6px;
+    }
+
+    /* Fullscreen Cinema Lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      background: rgba(10, 8, 7, 0.95);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 18px 22px;
+    }
+    .lightbox.open { display: flex; }
+    .lb-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: #f5efe6;
+    }
+    .lb-counter { font-size: 0.82rem; color: #b5a899; font-weight: 600; }
+    .lb-actions { display: flex; align-items: center; gap: 8px; }
+    .lb-btn {
+      background: rgba(255, 255, 255, 0.09);
+      color: #f5efe6;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .lb-btn.active { background: #e0c08d; color: #15110e; border-color: #e0c08d; }
+    .lb-stage {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      margin: 12px 0;
+    }
+    .lb-stage img, .lb-stage video {
+      max-width: 92vw;
+      max-height: 76vh;
+      border-radius: 12px;
+      object-fit: contain;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+    }
+    .lb-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(28, 23, 19, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #f5efe6;
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lb-prev { left: 8px; }
+    .lb-next { right: 8px; }
+    .lb-bottom { text-align: center; color: #f5efe6; padding-bottom: 4px; }
+    .lb-date { font-size: 0.78rem; color: #e0c08d; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .lb-cap { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.38rem; margin-top: 3px; }
+
+    footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 48px 20px 68px 20px;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    footer .closing-serif {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.9rem;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    /* Responsive Multi-Viewport Breakpoints */
+    @media (min-width: 881px) and (max-width: 1400px) {
+      .navbar { padding: 8px 16px; gap: 10px; }
+      .era-pill { padding: 5px 11px; font-size: 0.74rem; }
+      .orbit-viewport { height: 430px; --base-side: 218px; }
+    }
+    @media (max-width: 880px) {
+      .navbar { flex-wrap: wrap; padding: 10px 14px; gap: 8px; }
+      .nav-brand { font-size: 1.22rem; }
+      .era-nav { order: 3; width: 100%; padding-top: 6px; border-top: 1px solid var(--border-subtle); }
+      .btn-label-sm { display: none; }
+      .hero { min-height: 76vh; padding: 118px 18px 46px 18px; }
+      .orbit-section { padding: 42px 0 48px 0; }
+      .orbit-viewport { height: 365px; --base-side: 176px; }
+      .orbit-card { border-radius: 12px; }
+      .hud-hint { display: none; }
+    }
+    @media (max-width: 480px) {
+      .orbit-viewport { height: 335px; --base-side: 154px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- WARM GREIGE NEBULA + STARDUST CANVAS -->
+  <div class="cosmos-backdrop"></div>
+  <canvas id="stardustCanvas"></canvas>
+
+  <div class="page-shell">
+    <!-- STICKY NAVBAR -->
+    <nav class="navbar">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <a href="../" class="btn-pill" style="text-decoration:none; padding:5px 9px;" title="Volver al Portal">🏠</a>
+        <a href="../juego/" class="btn-pill" style="text-decoration:none; padding:5px 9px; border-color:rgba(255,51,119,0.45); color:#ff528c;" title="Videojuego 8-Bits">🎮 8-Bits</a>
+        <div class="nav-brand" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+          Nuestro <span>Universo</span>
+        </div>
+      </div>
+      <div id="eraNav" class="era-nav"></div>
+      <div class="nav-actions">
+        <button class="btn-pill" onclick="startSlideshow(0)" title="Modo Película Automática">
+          <span>▶</span> <span class="btn-label-sm">Película</span>
+        </button>
+        <button id="btnEditMode" class="btn-pill" onclick="toggleEditMode()" title="Personalizar títulos, frases o mover fotos">
+          <span>✎</span> <span class="btn-label-sm">Personalizar</span>
+        </button>
+        <button id="btnTheme" class="btn-pill" onclick="toggleTheme()" title="Alternar entre Cosmos Greige Nocturno y Planetario Greige Claro">
+          <span id="themeIcon">☀</span> <span id="themeLabel" class="btn-label-sm">Greige Claro</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- COSMIC HERO -->
+    <header class="hero">
+      <div class="hero-orbit-halo"></div>
+      <div class="hero-orbit-halo halo-2"></div>
+      <div class="hero-content">
+        <div id="heroEyebrow" class="hero-eyebrow" data-editable="true" data-field="heroEyebrow">CONSTELACIÓN DE RECUERDOS · 2014 — 2026</div>
+        <h1 id="heroTitle" class="hero-title" data-editable="true" data-field="heroTitle">Nuestro Propio Universo</h1>
+        <p id="heroSub" class="hero-sub" data-editable="true" data-field="heroSub">
+          Cada etapa de nuestra historia gira como un anillo en el tiempo. Desliza hacia abajo, toma cualquier órbita con tu mano para girarla y toca nuestros recuerdos para revivirlos.
+        </p>
+        <div id="heroStats" class="hero-chips"></div>
+        <div class="hero-cta-row">
+          <button class="btn-gold" onclick="scrollToFirstOrbit()">Explorar las Órbitas ↓</button>
+          <button class="btn-pill" style="padding:12px 22px; font-size:0.85rem;" onclick="startSlideshow(0)">▶ Reproducir Historia</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- EDIT BANNER -->
+    <div class="edit-banner">
+      <div style="font-size:0.83rem; line-height:1.45;">
+        <strong>Modo Personalizar Activo:</strong> Haz clic en cualquier título o frase para reescribirla, agrega notas a tus fotos o asigna de órbita las fotos sin fecha. Todo se guarda en automático.
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-pill" onclick="restoreHidden()">Restaurar ocultas</button>
+        <button class="btn-gold" style="padding:8px 16px; font-size:0.78rem;" onclick="exportCustomizations()">Descargar catalog.js</button>
+      </div>
+    </div>
+
+    <!-- VERTICAL CELESTIAL TIMELINE OF 3D ORBITAL RINGS -->
+    <main class="universe-timeline">
+      <div class="celestial-spine"></div>
+      <div id="orbitsContainer"></div>
+    </main>
+
+    <footer>
+      <div class="closing-serif" id="footerQuote" data-editable="true" data-field="footerQuote">Y nuestro universo sigue expandiéndose cada día contigo...</div>
+      <div>Arrastra cualquier anillo 360° · Pasa el cursor o toca LIVE para dar vida a cada instante</div>
+    </footer>
+  </div>
+
+  <!-- FULLSCREEN LIGHTBOX -->
+  <div id="lightbox" class="lightbox" onclick="handleLightboxBackdrop(event)">
+    <div class="lb-top">
+      <div id="lbCounter" class="lb-counter">1 / 148</div>
+      <div class="lb-actions">
+        <button id="lbLiveBtn" class="lb-btn" style="display:none;" onclick="toggleLightboxLive()">◉ LIVE</button>
+        <button id="lbAutoBtn" class="lb-btn" onclick="toggleSlideshow()">▶ Auto</button>
+        <button class="lb-btn" onclick="closeLightbox()">✕ Cerrar</button>
+      </div>
+    </div>
+    <div class="lb-stage" id="lbStage">
+      <button class="lb-nav lb-prev" onclick="stepLightbox(-1)">‹</button>
+      <div id="lbMediaHolder" style="display:flex;align-items:center;justify-content:center;"></div>
+      <button class="lb-nav lb-next" onclick="stepLightbox(1)">›</button>
+    </div>
+    <div class="lb-bottom">
+      <div id="lbDate" class="lb-date"></div>
+      <div id="lbCap" class="lb-cap"></div>
+    </div>
+  </div>
+
+  <script src="media/catalog.js"></script>
+  <script>
+    /* ========================================================================
+       1. STATE & CUSTOMIZATION PERSISTENCE
+       ======================================================================== */
+    const STORAGE_KEY = 'nuestra_historia_orbital_v2';
+    const rawCatalog = window.HISTORIA_CATALOG || { chapters: [], items: [] };
+
+    let custom = {
+      theme: 'cosmos-dark',
+      texts: {},
+      captions: {},
+      chapterOverrides: {},
+      hidden: {}
+    };
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) custom = Object.assign(custom, JSON.parse(saved));
+    } catch (e) {}
+
+    let isEditMode = false;
+    let flatVisibleItems = [];
+    const orbitControllers = {}; // id -> 3D physics state
+    const visibleOrbitIds = new Set();
+
+    function saveCustom() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(custom)); } catch (e) {}
+    }
+
+    function applyTheme() {
+      const t = custom.theme || 'cosmos-dark';
+      document.documentElement.setAttribute('data-theme', t);
+      const isLight = (t === 'cosmos-greige');
+      document.getElementById('themeIcon').textContent = isLight ? '☾' : '☀';
+      const lbl = document.getElementById('themeLabel');
+      if (lbl) lbl.textContent = isLight ? 'Cosmos Nocturno' : 'Greige Claro';
+    }
+
+    function toggleTheme() {
+      custom.theme = (custom.theme === 'cosmos-dark') ? 'cosmos-greige' : 'cosmos-dark';
+      applyTheme();
+      saveCustom();
+    }
+
+    function getEffectiveChapter(item) {
+      return custom.chapterOverrides[item.id] || item.chapterId;
+    }
+
+    /* ========================================================================
+       2. WARM COSMIC STARDUST CANVAS (SCROLL PARALLAX)
+       ======================================================================== */
+    (function initStardust() {
+      const canvas = document.getElementById('stardustCanvas');
+      const ctx = canvas.getContext('2d');
+      let w = 0, h = 0;
+      const stars = [];
+      const STAR_COUNT = 115;
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      for (let i = 0; i < STAR_COUNT; i++) {
+        stars.push({
+          x: Math.random() * 2000,
+          y: Math.random() * 2000,
+          z: 0.2 + Math.random() * 0.85,
+          r: 0.55 + Math.random() * 1.65,
+          gold: Math.random() < 0.38,
+          phase: Math.random() * Math.PI * 2,
+          driftX: (Math.random() - 0.5) * 0.14
+        });
+      }
+
+      let t = 0;
+      function drawStars() {
+        t += 0.012;
+        ctx.clearRect(0, 0, w, h);
+        const cs = getComputedStyle(document.documentElement);
+        const starRgb = cs.getPropertyValue('--star-rgb').trim() || '236, 224, 206';
+        const goldRgb = cs.getPropertyValue('--gold-rgb').trim() || '226, 193, 138';
+        const scrollY = window.scrollY || 0;
+
+        for (let i = 0; i < stars.length; i++) {
+          const s = stars[i];
+          s.x += s.driftX;
+          if (s.x < 0) s.x += w;
+          const px = s.x % w;
+          let py = (s.y - scrollY * 0.18 * s.z) % h;
+          if (py < 0) py += h;
+
+          const twinkle = 0.35 + 0.55 * (0.5 + 0.5 * Math.sin(t * 1.4 + s.phase));
+          const alpha = twinkle * (0.35 + 0.55 * s.z);
+          ctx.beginPath();
+          ctx.arc(px, py, s.r * s.z, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${s.gold ? goldRgb : starRgb}, ${alpha.toFixed(3)})`;
+          ctx.fill();
+        }
+        requestAnimationFrame(drawStars);
+      }
+      requestAnimationFrame(drawStars);
+    })();
+
+    /* ========================================================================
+       3. RENDER ORBITAL TIMELINE & 3D RINGS
+       ======================================================================== */
+    function renderAll() {
+      ['heroEyebrow', 'heroTitle', 'heroSub', 'footerQuote'].forEach(f => {
+        if (custom.texts[f]) {
+          const el = document.getElementById(f);
+          if (el) el.textContent = custom.texts[f];
+        }
+      });
+
+      const activeItems = rawCatalog.items.filter(i => !custom.hidden[i.id]);
+      const liveCnt = activeItems.filter(i => i.isLive).length;
+      const chaptersWithItems = rawCatalog.chapters.map(ch => {
+        const chItems = activeItems.filter(it => getEffectiveChapter(it) === ch.id);
+        chItems.sort((a, b) => (a.isoDate || a.orig).localeCompare(b.isoDate || b.orig));
+        return { ...ch, items: chItems };
+      }).filter(ch => ch.items.length > 0);
+
+      document.getElementById('heroStats').innerHTML = `
+        <span class="stat-chip">${chaptersWithItems.length} Anillos Orbitales</span>
+        <span class="stat-chip">${activeItems.length} Recuerdos</span>
+        <span class="stat-chip">◉ ${liveCnt} Live Photos</span>
+      `;
+
+      // Group Era Pills cleanly by yearGroup (first orbit of each era)
+      const seenEras = new Set();
+      const eraButtons = [];
+      chaptersWithItems.forEach(ch => {
+        const era = ch.yearGroup || ch.span;
+        if (!seenEras.has(era)) {
+          seenEras.add(era);
+          eraButtons.push({ era, firstOrbitId: ch.id });
+        }
+      });
+      document.getElementById('eraNav').innerHTML = eraButtons.map((eb, i) => `
+        <button class="era-pill ${i === 0 ? 'active' : ''}" data-era="${eb.era}" onclick="scrollToOrbit('${eb.firstOrbitId}')">${eb.era}</button>
+      `).join('');
+
+      // Build Orbit Sections
+      flatVisibleItems = [];
+      Object.keys(orbitControllers).forEach(k => delete orbitControllers[k]);
+
+      const container = document.getElementById('orbitsContainer');
+      container.innerHTML = chaptersWithItems.map((ch, chIdx) => {
+        const titleTxt = custom.texts[`title_${ch.id}`] || ch.title;
+        const subTxt = custom.texts[`sub_${ch.id}`] || ch.subtitle;
+
+        const cardsHtml = ch.items.map((it, localIdx) => {
+          const globalIdx = flatVisibleItems.length;
+          flatVisibleItems.push(it);
+          const clampedAspect = Math.max(0.64, Math.min(1.42, it.aspect || 0.78));
+          const sqrtA = Math.sqrt(clampedAspect).toFixed(4);
+
+          const badgeHtml = it.isVideo
+            ? `<div class="badge-top"><span>▶ VIDEO</span></div>`
+            : (it.isLive ? `<div class="badge-top" onclick="triggerCardLive(event, '${it.id}')"><span class="live-dot"></span><span>LIVE</span></div>` : '');
+
+          const editControls = `
+            <div class="card-edit-bar" onclick="event.stopPropagation()">
+              <button class="mini-edit-btn" onclick="promptCaption('${it.id}')">+ Nota</button>
+              <select class="mini-edit-btn" onchange="moveItemChapter('${it.id}', this.value)">
+                <option value="">Órbita...</option>
+                ${rawCatalog.chapters.map(c => `<option value="${c.id}" ${getEffectiveChapter(it) === c.id ? 'selected' : ''}>${c.eyebrow}</option>`).join('')}
+              </select>
+              <button class="mini-edit-btn" onclick="hideItem('${it.id}')">✕</button>
+            </div>
+          `;
+
+          const loadAttr = chIdx < 3 ? 'eager' : 'lazy';
+          return `
+            <article class="orbit-card"
+                     id="card_${it.id}"
+                     data-local-idx="${localIdx}"
+                     data-global-idx="${globalIdx}"
+                     style="--sqrt-a: ${sqrtA};"
+                     onmouseenter="cardHoverIn('${ch.id}', '${it.id}')"
+                     onmouseleave="cardHoverOut('${ch.id}', '${it.id}')"
+                     onclick="handleOrbitCardClick(event, '${ch.id}', ${localIdx}, ${globalIdx})">
+              ${badgeHtml}
+              ${editControls}
+              <img src="${it.thumb}" alt="${it.dateLabel}" loading="${loadAttr}">
+              ${it.isLive ? `<video class="live-layer" id="vid_${it.id}" data-src="${it.live}" muted playsinline loop preload="none"></video>` : ''}
+              <div class="card-date-chip">${it.dateLabel}</div>
+            </article>
+          `;
+        }).join('');
+
+        return `
+          <section class="orbit-section" id="sec_${ch.id}" data-orbid="${ch.id}" data-era="${ch.yearGroup || ch.span}">
+            <div class="orbit-header">
+              <div class="spine-star"></div>
+              <div class="orb-eyebrow">${ch.eyebrow} · ${ch.items.length} recuerdos</div>
+              <h2 class="orb-title" data-editable="true" data-field="title_${ch.id}">${titleTxt}</h2>
+              <p class="orb-sub" data-editable="true" data-field="sub_${ch.id}">${subTxt}</p>
+            </div>
+
+            <div class="orbit-viewport" id="vp_${ch.id}">
+              <div class="orbital-core-glow"></div>
+              <div class="orbital-ellipse" id="ell_${ch.id}"></div>
+              <div class="orbital-ellipse-inner" id="elli_${ch.id}"></div>
+              <div class="orbit-stage" id="stage_${ch.id}">
+                ${cardsHtml}
+              </div>
+            </div>
+
+            <div class="orbit-hud">
+              <div class="front-readout" id="readout_${ch.id}"></div>
+              <div class="hud-btns">
+                <button class="hud-btn" onclick="nudgeOrbit('${ch.id}', 1)" title="Girar a la izquierda">‹</button>
+                <button class="hud-btn" id="pausebtn_${ch.id}" onclick="toggleOrbitAuto('${ch.id}')">⏸ Giro</button>
+                <button class="hud-btn" onclick="openFrontCardLightbox('${ch.id}')">Ampliar ⤢</button>
+                <button class="hud-btn" onclick="nudgeOrbit('${ch.id}', -1)" title="Girar a la derecha">›</button>
+                <span class="hud-hint">· Arrastra el anillo para girarlo</span>
+              </div>
+            </div>
+          </section>
+        `;
+      }).join('');
+
+      // Initialize 3D Orbit Controllers
+      chaptersWithItems.forEach((ch, idx) => {
+        initOrbitController(ch, idx % 2 === 0 ? 1 : -1);
+      });
+
+      setupVisibilityObservers();
+      bindEditableTexts();
+    }
+
+    /* ========================================================================
+       4. PARAMETRIC 3D ORBITAL PHYSICS ENGINE (AUTO-SPIN + DRAG + INERTIA)
+       ======================================================================== */
+    function initOrbitController(ch, dirSign) {
+      const vp = document.getElementById('vp_' + ch.id);
+      const stage = document.getElementById('stage_' + ch.id);
+      const readout = document.getElementById('readout_' + ch.id);
+      const cardEls = Array.from(stage.querySelectorAll('.orbit-card'));
+      const N = cardEls.length;
+
+      const ctrl = {
+        id: ch.id,
+        items: ch.items,
+        cards: cardEls,
+        readoutEl: readout,
+        N,
+        angle: 0,
+        vel: 0,
+        targetAngle: null,
+        baseSpeed: 0.0024 * dirSign, // Gentle dreamy self-rotation
+        paused: false,
+        hovering: false,
+        dragging: false,
+        movedPx: 0,
+        lastX: 0,
+        frontIdx: 0,
+        cardDepths: new Array(N).fill(0)
+      };
+
+      // Pointer Drag + Inertia
+      vp.addEventListener('pointerdown', e => {
+        if (e.target.closest('.card-edit-bar') || e.target.closest('.badge-top')) return;
+        ctrl.dragging = true;
+        ctrl.targetAngle = null;
+        ctrl.movedPx = 0;
+        ctrl.lastX = e.clientX;
+        ctrl.vel = 0;
+        vp.classList.add('dragging');
+      });
+
+      window.addEventListener('pointermove', e => {
+        if (!ctrl.dragging) return;
+        const dx = e.clientX - ctrl.lastX;
+        ctrl.lastX = e.clientX;
+        ctrl.movedPx += Math.abs(dx);
+        const sensitivity = window.innerWidth < 640 ? 0.0075 : 0.0046;
+        const deltaRad = dx * sensitivity;
+        ctrl.angle += deltaRad;
+        ctrl.vel = deltaRad * 0.85;
+        layoutOrbit3D(ctrl);
+      });
+
+      window.addEventListener('pointerup', () => {
+        if (!ctrl.dragging) return;
+        ctrl.dragging = false;
+        vp.classList.remove('dragging');
+      });
+
+      orbitControllers[ch.id] = ctrl;
+      layoutOrbit3D(ctrl);
+    }
+
+    function layoutOrbit3D(ctrl) {
+      const vw = window.innerWidth;
+      const isMobile = vw <= 640;
+      const isLaptop = vw > 640 && vw <= 1280;
+
+      // Responsive 3D Saturn-Orbit Radii (overhead ~15deg planetary tilt)
+      const maxRx = isMobile ? Math.min(vw * 0.36, 168) : (isLaptop ? Math.min(vw * 0.37, 405) : Math.min(vw * 0.38, 485));
+      const rx = Math.max(isMobile ? 118 : 275, maxRx);
+      const ry = isMobile ? 34 : 56; // Overhead Saturn tilt: front card lower (+y), rear cards arch gracefully higher (-y)
+
+      const ell = document.getElementById('ell_' + ctrl.id);
+      const elli = document.getElementById('elli_' + ctrl.id);
+      if (ell) {
+        ell.style.width = `${Math.round(rx * 2.08)}px`;
+        ell.style.height = `${Math.round(ry * 2.38)}px`;
+      }
+      if (elli) {
+        elli.style.width = `${Math.round(rx * 1.58)}px`;
+        elli.style.height = `${Math.round(ry * 1.72)}px`;
+      }
+
+      let bestDepth = -2;
+      let bestIdx = 0;
+
+      for (let i = 0; i < ctrl.N; i++) {
+        const phi = ctrl.angle + (i * Math.PI * 2) / ctrl.N;
+        const sinP = Math.sin(phi);
+        const cosP = Math.cos(phi); // +1 = closest front-center, -1 = farthest back
+
+        const x = rx * sinP;
+        const y = ry * cosP - 8;    // Front sits in lower foreground (+y), rear rises in upper background (-y)
+        const rotY = sinP * -28;    // Crisp 3D foreshortening on flank cards without flipping backwards
+
+        const normDepth = (cosP + 1) * 0.5; // 0 (back) .. 1 (front)
+        ctrl.cardDepths[i] = normDepth;
+
+        const scale = 0.54 + 0.56 * Math.pow(normDepth, 1.08); // 0.54 at far back -> 1.10 at front spotlight
+        const bright = 0.44 + 0.56 * Math.pow(normDepth, 0.9); // Atmospheric depth lighting without ghost bleed-through
+        const opacity = normDepth < 0.35 ? (0.58 + normDepth * 1.2) : 1.0;
+        const zIdx = Math.round(normDepth * 100);
+
+        const card = ctrl.cards[i];
+        card.style.transform = `perspective(1050px) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0px) rotateY(${rotY.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+        card.style.filter = `brightness(${bright.toFixed(3)})`;
+        card.style.opacity = opacity.toFixed(3);
+        card.style.zIndex = zIdx;
+
+        if (cosP > bestDepth) {
+          bestDepth = cosP;
+          bestIdx = i;
+        }
+      }
+
+      if (ctrl.frontIdx !== bestIdx || !ctrl.readoutEl.innerHTML) {
+        if (ctrl.cards[ctrl.frontIdx]) ctrl.cards[ctrl.frontIdx].classList.remove('is-front');
+        ctrl.frontIdx = bestIdx;
+        if (ctrl.cards[bestIdx]) ctrl.cards[bestIdx].classList.add('is-front');
+
+        const frontItem = ctrl.items[bestIdx];
+        if (frontItem && ctrl.readoutEl) {
+          const cap = custom.captions[frontItem.id];
+          ctrl.readoutEl.innerHTML = `En foco (${bestIdx + 1}/${ctrl.N}): <strong>${frontItem.dateLabel}</strong>${cap ? ' — ' + cap : ''}`;
+        }
+      }
+    }
+
+    // Scroll Momentum Coupled to Active Orbits
+    let lastScrollY = window.scrollY || 0;
+    let scrollBoost = 0;
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY || 0;
+      const dy = y - lastScrollY;
+      lastScrollY = y;
+      scrollBoost = Math.max(-0.022, Math.min(0.022, dy * 0.00035));
+    }, { passive: true });
+
+    // Master 60-FPS Animation Loop (updates ONLY visible orbits!)
+    function tickOrbits() {
+      scrollBoost *= 0.90;
+      visibleOrbitIds.forEach(id => {
+        const ctrl = orbitControllers[id];
+        if (!ctrl || ctrl.dragging) return;
+
+        if (ctrl.targetAngle !== null) {
+          const diff = ctrl.targetAngle - ctrl.angle;
+          ctrl.angle += diff * 0.11;
+          if (Math.abs(diff) < 0.003) ctrl.targetAngle = null;
+          layoutOrbit3D(ctrl);
+          return;
+        }
+
+        if (Math.abs(ctrl.vel) > 0.0002) {
+          ctrl.angle += ctrl.vel;
+          ctrl.vel *= 0.945; // Smooth inertia decay
+          layoutOrbit3D(ctrl);
+        } else if (!ctrl.paused && !isEditMode) {
+          const hoverFactor = ctrl.hovering ? 0.22 : 1.0;
+          ctrl.angle += ctrl.baseSpeed * hoverFactor + scrollBoost;
+          layoutOrbit3D(ctrl);
+        }
+      });
+      requestAnimationFrame(tickOrbits);
+    }
+    requestAnimationFrame(tickOrbits);
+
+    window.addEventListener('resize', () => {
+      Object.values(orbitControllers).forEach(ctrl => layoutOrbit3D(ctrl));
+    });
+
+    function nudgeOrbit(id, stepDir) {
+      const ctrl = orbitControllers[id];
+      if (!ctrl) return;
+      const stepRad = (Math.PI * 2) / ctrl.N;
+      const base = ctrl.targetAngle !== null ? ctrl.targetAngle : ctrl.angle;
+      ctrl.targetAngle = base + stepDir * stepRad;
+    }
+
+    function toggleOrbitAuto(id) {
+      const ctrl = orbitControllers[id];
+      if (!ctrl) return;
+      ctrl.paused = !ctrl.paused;
+      const btn = document.getElementById('pausebtn_' + id);
+      if (btn) btn.textContent = ctrl.paused ? '▶ Giro' : '⏸ Giro';
+    }
+
+    function openFrontCardLightbox(id) {
+      const ctrl = orbitControllers[id];
+      if (!ctrl) return;
+      const card = ctrl.cards[ctrl.frontIdx];
+      if (card) {
+        const gIdx = parseInt(card.getAttribute('data-global-idx'), 10);
+        openLightbox(gIdx);
+      }
+    }
+
+    function handleOrbitCardClick(e, orbId, localIdx, globalIdx) {
+      const ctrl = orbitControllers[orbId];
+      if (!ctrl || isEditMode) return;
+      if (ctrl.movedPx > 9) return; // Was a drag spin, not a tap!
+
+      // If user clicked a side/rear card, smoothly spin it to front-center first!
+      if (ctrl.cardDepths[localIdx] < 0.86) {
+        const desiredBase = -((localIdx * Math.PI * 2) / ctrl.N);
+        // Find shortest angular path to desiredBase
+        let diff = (desiredBase - ctrl.angle) % (Math.PI * 2);
+        if (diff > Math.PI) diff -= Math.PI * 2;
+        if (diff < -Math.PI) diff += Math.PI * 2;
+        ctrl.targetAngle = ctrl.angle + diff;
+      } else {
+        openLightbox(globalIdx);
+      }
+    }
+
+    /* ========================================================================
+       5. LIVE PHOTOS ENGINE (HOVER / TAP)
+       ======================================================================== */
+    const hoverTimers = {};
+    function cardHoverIn(orbId, itemId) {
+      if (orbitControllers[orbId]) orbitControllers[orbId].hovering = true;
+      if (window.matchMedia('(hover: none)').matches) return;
+      hoverTimers[itemId] = setTimeout(() => playLiveOnCard(itemId), 150);
+    }
+    function cardHoverOut(orbId, itemId) {
+      if (orbitControllers[orbId]) orbitControllers[orbId].hovering = false;
+      clearTimeout(hoverTimers[itemId]);
+      stopLiveOnCard(itemId);
+    }
+    function triggerCardLive(e, id) {
+      e.stopPropagation();
+      const card = document.getElementById('card_' + id);
+      if (card && card.classList.contains('playing-live')) stopLiveOnCard(id);
+      else playLiveOnCard(id);
+    }
+    function playLiveOnCard(id) {
+      const card = document.getElementById('card_' + id);
+      const vid = document.getElementById('vid_' + id);
+      if (!card || !vid) return;
+      if (!vid.src) vid.src = vid.getAttribute('data-src');
+      card.classList.add('playing-live');
+      vid.currentTime = 0;
+      vid.play().catch(() => {});
+    }
+    function stopLiveOnCard(id) {
+      const card = document.getElementById('card_' + id);
+      const vid = document.getElementById('vid_' + id);
+      if (!card || !vid) return;
+      card.classList.remove('playing-live');
+      vid.pause();
+    }
+
+    /* ========================================================================
+       6. INTERSECTION OBSERVERS (ACTIVE RINGS & SCROLL REVEAL)
+       ======================================================================== */
+    function setupVisibilityObservers() {
+      visibleOrbitIds.clear();
+      const visObs = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          const id = en.target.getAttribute('data-orbid');
+          if (en.isIntersecting) {
+            en.target.classList.add('revealed');
+            visibleOrbitIds.add(id);
+          } else {
+            visibleOrbitIds.delete(id);
+          }
+        });
+      }, { rootMargin: '140px 0px 140px 0px', threshold: 0.05 });
+
+      const eraSpy = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          if (en.isIntersecting) {
+            const era = en.target.getAttribute('data-era');
+            document.querySelectorAll('.era-pill').forEach(btn => {
+              btn.classList.toggle('active', btn.getAttribute('data-era') === era);
+            });
+          }
+        });
+      }, { rootMargin: '-32% 0px -52% 0px' });
+
+      document.querySelectorAll('.orbit-section').forEach(sec => {
+        visObs.observe(sec);
+        eraSpy.observe(sec);
+      });
+    }
+
+    function scrollToOrbit(orbId) {
+      const el = document.getElementById('sec_' + orbId);
+      if (!el) return;
+      const y = el.getBoundingClientRect().top + window.scrollY - 68;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+    function scrollToFirstOrbit() {
+      const first = document.querySelector('.orbit-section');
+      if (first) {
+        const y = first.getBoundingClientRect().top + window.scrollY - 68;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }
+
+    /* ========================================================================
+       7. FULLSCREEN CINEMA LIGHTBOX & AUTO-SLIDESHOW
+       ======================================================================== */
+    let lbIndex = 0;
+    let slideshowTimer = null;
+    let lbPlayingLive = false;
+
+    function openLightbox(idx) {
+      if (isEditMode) return;
+      lbIndex = idx;
+      document.getElementById('lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      renderLightboxSlide();
+    }
+    function closeLightbox() {
+      stopSlideshow();
+      document.getElementById('lightbox').classList.remove('open');
+      document.getElementById('lbMediaHolder').innerHTML = '';
+      document.body.style.overflow = '';
+    }
+    function handleLightboxBackdrop(e) {
+      if (e.target.id === 'lightbox' || e.target.id === 'lbStage') closeLightbox();
+    }
+    function stepLightbox(delta) {
+      if (!flatVisibleItems.length) return;
+      lbIndex = (lbIndex + delta + flatVisibleItems.length) % flatVisibleItems.length;
+      renderLightboxSlide();
+    }
+    function renderLightboxSlide() {
+      const it = flatVisibleItems[lbIndex];
+      if (!it) return;
+      lbPlayingLive = false;
+      document.getElementById('lbCounter').textContent = `${lbIndex + 1} / ${flatVisibleItems.length}`;
+      document.getElementById('lbDate').textContent = it.dateLabel;
+      document.getElementById('lbCap').textContent = custom.captions[it.id] || '';
+
+      const liveBtn = document.getElementById('lbLiveBtn');
+      liveBtn.style.display = it.isLive ? 'inline-block' : 'none';
+      liveBtn.classList.remove('active');
+
+      const holder = document.getElementById('lbMediaHolder');
+      if (it.isVideo) {
+        holder.innerHTML = `<video src="${it.video}" poster="${it.full}" controls autoplay playsinline></video>`;
+      } else {
+        holder.innerHTML = `<img src="${it.full}" alt="${it.dateLabel}">`;
+        if (slideshowTimer && it.isLive) {
+          setTimeout(() => { if (slideshowTimer) toggleLightboxLive(true); }, 850);
+        }
+      }
+    }
+    function toggleLightboxLive(forcePlay) {
+      const it = flatVisibleItems[lbIndex];
+      if (!it || !it.isLive) return;
+      const holder = document.getElementById('lbMediaHolder');
+      const liveBtn = document.getElementById('lbLiveBtn');
+      if (!lbPlayingLive || forcePlay === true) {
+        lbPlayingLive = true;
+        liveBtn.classList.add('active');
+        holder.innerHTML = `<video src="${it.live}" poster="${it.full}" autoplay loop muted playsinline></video>`;
+      } else {
+        lbPlayingLive = false;
+        liveBtn.classList.remove('active');
+        holder.innerHTML = `<img src="${it.full}" alt="${it.dateLabel}">`;
+      }
+    }
+    function startSlideshow(startIdx) {
+      openLightbox(startIdx || 0);
+      if (!slideshowTimer) toggleSlideshow();
+    }
+    function toggleSlideshow() {
+      const btn = document.getElementById('lbAutoBtn');
+      if (slideshowTimer) {
+        stopSlideshow();
+      } else {
+        btn.classList.add('active');
+        btn.textContent = '⏸ Pausa';
+        slideshowTimer = setInterval(() => stepLightbox(1), 4200);
+      }
+    }
+    function stopSlideshow() {
+      clearInterval(slideshowTimer);
+      slideshowTimer = null;
+      const btn = document.getElementById('lbAutoBtn');
+      if (btn) { btn.classList.remove('active'); btn.textContent = '▶ Auto'; }
+    }
+
+    window.addEventListener('keydown', e => {
+      if (!document.getElementById('lightbox').classList.contains('open')) return;
+      if (e.key === 'ArrowRight') stepLightbox(1);
+      if (e.key === 'ArrowLeft') stepLightbox(-1);
+      if (e.key === 'Escape') closeLightbox();
+    });
+    let lbTouchX = 0;
+    document.getElementById('lbStage').addEventListener('touchstart', e => {
+      lbTouchX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    document.getElementById('lbStage').addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].screenX - lbTouchX;
+      if (Math.abs(dx) > 48) stepLightbox(dx < 0 ? 1 : -1);
+    }, { passive: true });
+
+    /* ========================================================================
+       8. PERSONALIZE / CURATION MODE
+       ======================================================================== */
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+      document.body.classList.toggle('is-editing', isEditMode);
+      document.getElementById('btnEditMode').classList.toggle('active-mode', isEditMode);
+      bindEditableTexts();
+    }
+    function bindEditableTexts() {
+      document.querySelectorAll('[data-editable="true"]').forEach(el => {
+        el.contentEditable = isEditMode ? 'true' : 'false';
+        el.onblur = () => {
+          const field = el.getAttribute('data-field');
+          if (field) {
+            custom.texts[field] = el.textContent.trim();
+            saveCustom();
+          }
+        };
+      });
+    }
+    function promptCaption(id) {
+      const current = custom.captions[id] || '';
+      const next = prompt('Escribe una frase o recuerdo corto para esta foto:', current);
+      if (next !== null) {
+        custom.captions[id] = next.trim();
+        saveCustom();
+        renderAll();
+      }
+    }
+    function moveItemChapter(id, destCh) {
+      if (!destCh) return;
+      custom.chapterOverrides[id] = destCh;
+      saveCustom();
+      renderAll();
+    }
+    function hideItem(id) {
+      custom.hidden[id] = true;
+      saveCustom();
+      renderAll();
+    }
+    function restoreHidden() {
+      custom.hidden = {};
+      saveCustom();
+      renderAll();
+    }
+    function exportCustomizations() {
+      const updated = JSON.parse(JSON.stringify(rawCatalog));
+      updated.chapters.forEach(ch => {
+        if (custom.texts['title_' + ch.id]) ch.title = custom.texts['title_' + ch.id];
+        if (custom.texts['sub_' + ch.id]) ch.subtitle = custom.texts['sub_' + ch.id];
+      });
+      updated.items = updated.items.filter(i => !custom.hidden[i.id]).map(i => ({
+        ...i,
+        chapterId: getEffectiveChapter(i),
+        caption: custom.captions[i.id] || ''
+      }));
+      const blob = new Blob(['window.HISTORIA_CATALOG = ' + JSON.stringify(updated, null, 2) + ';\n'], { type: 'application/javascript' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'catalog.js';
+      a.click();
+    }
+
+    applyTheme();
+    renderAll();
+  </script>
+</body>
+</html>

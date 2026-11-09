@@ -1,0 +1,9 @@
+{
+  "name": "Nuestra Aventura · Miniyú & Drew",
+  "short_name": "Nuestra Aventura",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d0e17",
+  "theme_color": "#0d0e17",
+  "orientation": "portrait"
+}
