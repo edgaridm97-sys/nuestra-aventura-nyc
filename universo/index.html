@@ -857,14 +857,12 @@
       const t = custom.theme || 'cosmos-dark';
       document.documentElement.setAttribute('data-theme', t);
       const isLight = (t === 'cosmos-greige');
-      document.getElementById('themeIcon').textContent = isLight ? '☾' : '☀';
+      const icon = document.getElementById('themeIcon');
+      if (icon) icon.textContent = isLight ? '☾' : '☀';
       const lbl = document.getElementById('themeLabel');
       if (lbl) lbl.textContent = isLight ? 'Cosmos Nocturno' : 'Greige Claro';
     }
 
-    function toggleTheme() {
-      custom.theme = (custom.theme === 'cosmos-dark') ? 'cosmos-greige' : 'cosmos-dark';
-      
     /* ========================================================================
        SUNSET TO DEEP COSMOS SCROLL ENGINE
        ======================================================================== */
@@ -872,12 +870,10 @@
     function updateSunsetScroll() {
       if (!sunsetEl) return;
       const scrollY = window.scrollY || window.pageYOffset || 0;
-      // Sunset stays full at the top, fades as you journey through orbits (0 to 1800px)
       const fadeDist = 1750;
       const sunsetOpacity = Math.max(0, Math.min(1, 1 - (scrollY / fadeDist)));
       sunsetEl.style.opacity = sunsetOpacity.toFixed(3);
 
-      // Subtle atmospheric shift for navbar glass
       const navbar = document.querySelector('.navbar');
       if (navbar) {
         if (sunsetOpacity > 0.4) {
@@ -892,7 +888,9 @@
     window.addEventListener('scroll', updateSunsetScroll, { passive: true });
     updateSunsetScroll();
 
-    applyTheme();
+    function toggleTheme() {
+      custom.theme = (custom.theme === 'cosmos-dark') ? 'cosmos-greige' : 'cosmos-dark';
+      applyTheme();
       saveCustom();
     }
 
@@ -946,10 +944,9 @@
           let py = (s.y - scrollY * 0.18 * s.z) % h;
           if (py < 0) py += h;
 
-          const scrollY = window.scrollY || 0;
-          const nightFactor = Math.min(1, Math.max(0.25, scrollY / 1400));
-          const twinkle = 0.35 + 0.55 * (0.5 + 0.5 * Math.sin(t * 1.4 + s.phase));
-          const alpha = twinkle * (0.35 + 0.55 * s.z) * nightFactor;
+          // Sparkling golden & celestial star dots across both sunset and cosmos
+          const twinkle = 0.40 + 0.60 * (0.5 + 0.5 * Math.sin(t * 1.6 + s.phase));
+          const alpha = twinkle * (0.45 + 0.55 * s.z);
           ctx.beginPath();
           ctx.arc(px, py, s.r * s.z, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(${s.gold ? goldRgb : starRgb}, ${alpha.toFixed(3)})`;
